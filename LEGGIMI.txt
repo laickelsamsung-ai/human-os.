@@ -1,0 +1,5 @@
+HUMAN OS 0.3
+Carica tutti i file della cartella nella radice di un sito HTTPS (es. GitHub Pages).
+Le domande si adattano con regole locali, NON tramite IA.
+I dati sono salvati nel browser; esporta un backup regolarmente.
+Non pubblicare mai i backup o i tuoi dati personali nel repository.
