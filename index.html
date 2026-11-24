@@ -225,4 +225,49 @@ $('importMilestones').onchange=async e=>{const file=e.target.files?.[0];if(!file
  render(true);
 })();
 </script>
+<style>
+#vault{--vault-rgb:113,151,179;--vault-accent:#7a9ab0}
+#vault .section-heading{border-radius:20px;padding:15px 19px;margin-bottom:8px;background:linear-gradient(120deg,rgba(var(--vault-rgb),.24),transparent 80%);transition:background-color 2s}
+#vault .section-scroll>.card{border-radius:23px;border:1px solid rgba(var(--vault-rgb),.40);background:radial-gradient(circle at 90% 0%,rgba(var(--vault-rgb),.17),transparent 55%),var(--surface);transition:border-color 2s}
+#vaultLocked{max-width:420px;margin:20px auto 30px;padding:25px;border:1px solid rgba(var(--vault-rgb),.40);border-radius:23px;text-align:center;background:var(--surface2)}
+#vaultLocked::before{content:'✦';display:grid;place-items:center;width:65px;height:65px;margin:0 auto 16px;border:1px solid rgba(var(--vault-rgb),.60);border-radius:50%;font-size:30px;color:var(--vault-accent);box-shadow:0 0 30px rgba(var(--vault-rgb),.26)}
+#vaultLocked label{text-align:left;display:block;margin-top:18px}#vaultPin{text-align:center;font-size:21px;letter-spacing:8px}
+#vaultUnlock,#vaultSave,#vaultChatSend{background:var(--vault-accent);color:#101923;border-color:transparent}#vault .vault-menu{display:flex;gap:8px;margin:12px 0 16px;position:sticky;top:0;z-index:3;padding:7px;border-radius:15px;background:var(--surface2)}
+#vault .vault-menu button{flex:1;padding:10px 5px;font-size:13px;border-radius:11px;background:transparent;color:var(--fg)}#vault .vault-menu button.active{background:rgba(var(--vault-rgb),.30);border:1px solid rgba(var(--vault-rgb),.55)}
+#vault .vault-tools{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}#vault .vault-tools summary{cursor:pointer}
+#vault .vault-chat-list{min-height:220px;max-height:45dvh;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
+#vault .vault-chat-bubble{max-width:88%;width:fit-content;padding:10px 13px;margin:8px 0;border-radius:15px;line-height:1.45;overflow-wrap:anywhere;background:var(--surface);border:1px solid var(--line)}
+#vault .vault-chat-bubble.mine{margin-left:auto;background:rgba(var(--vault-rgb),.22);border-color:rgba(var(--vault-rgb),.4)}
+#vault .vault-chat-compose{display:flex;gap:8px;margin-top:10px}#vaultChatInput{min-width:0;flex:1}#vaultChatSend{flex:none}#vault .vault-privacy{font-size:12px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){#vault *{transition:none!important}}
+</style>
+<script>
+(()=>{
+ const vault=$('vault'),open=$('vaultOpen'),locked=$('vaultLocked'),type=$('vaultType');if(!vault||!open)return;
+ vUnits.intimita=['Episodio','Nota'];vMethods.intimita=['Riflessione','Esperienza','Altro'];
+ type.insertAdjacentHTML('beforeend','<option value="intimita">Sessualità e intimità</option>');
+ const schemes={alcol:['177,139,96','#c9a97b'],cannabis:['99,157,106','#98d19c'],nicotina:['133,143,153','#b6c2ca'],altro:['128,121,175','#b6a9de'],abitudine:['110,154,180','#9dcde2'],intimita:['183,96,112','#e5a2b0']};
+ const formStart=type.closest('label')||type.previousElementSibling;
+ const nav=document.createElement('div');nav.className='vault-menu';nav.innerHTML='<button type="button" data-vpane="record" class="active">▤ Registro</button><button type="button" data-vpane="talk">✦ Dialogo</button>';open.insertBefore(nav,open.firstChild);
+ const chat=document.createElement('div');chat.id='vaultTalkPane';chat.className='hidden';chat.innerHTML='<h3>✦ Dialogo privato</h3><p class="muted vault-privacy">Solo in questo spazio protetto. Le risposte sono offline e possono fraintendere: non sono ancora generate da un’AI. I messaggi restano nel backup cifrato dello Spazio.</p><div id="vaultChatList" class="vault-chat-list" aria-live="polite"></div><div class="vault-chat-compose"><input id="vaultChatInput" maxlength="1200" placeholder="Scrivi un pensiero…" aria-label="Messaggio privato"><button type="button" id="vaultChatSend">Invia</button></div><p id="vaultChatStatus" role="status" class="muted"></p>';
+ open.insertBefore(chat,nav.nextSibling);
+ const record=document.createElement('div');record.id='vaultRecordPane';
+ while(chat.nextSibling)record.append(chat.nextSibling);
+ open.append(record);
+ const tools=record.querySelector('#vaultLock')?.closest('.row');if(tools){const lock=tools.querySelector('#vaultLock');open.insertBefore(lock,nav);const details=document.createElement('details');details.className='vault-tools';details.innerHTML='<summary>Backup cifrato e privacy</summary>';record.append(details);details.append(tools)}
+ function pane(name){const talk=name==='talk';chat.classList.toggle('hidden',!talk);record.classList.toggle('hidden',talk);nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.vpane===name));if(talk)renderChat()}
+ nav.onclick=e=>{const b=e.target.closest('[data-vpane]');if(b)pane(b.dataset.vpane)};
+ let current=[113,151,179],frame=0;
+ function color(){const target=schemes[type.value]||schemes.abitudine;const from=current.slice(),to=target[0].split(',').map(Number),start=performance.now();cancelAnimationFrame(frame);function step(now){const fraction=matchMedia('(prefers-reduced-motion:reduce)').matches?1:Math.min(1,(now-start)/2100),ease=fraction*fraction*(3-2*fraction);current=from.map((x,i)=>Math.round(x+(to[i]-x)*ease));vault.style.setProperty('--vault-rgb',current.join(','));if(fraction<1)frame=requestAnimationFrame(step)}frame=requestAnimationFrame(step);vault.style.setProperty('--vault-accent',target[1])}
+ type.addEventListener('change',color);color();
+ function renderChat(){const list=$('vaultChatList');if(!vaultData){list.replaceChildren();return}const messages=Array.isArray(vaultData.chat)?vaultData.chat:[];list.innerHTML=messages.slice(-80).map(m=>`<div class="vault-chat-bubble ${m.role==='user'?'mine':''}">${esc(m.text)}</div>`).join('')||'<p class="muted">Qui puoi parlare liberamente. I tuoi messaggi si aprono solo con il PIN.</p>';list.scrollTop=list.scrollHeight}
+ const render=vaultRender;vaultRender=function(){render();renderChat()};
+ const lock=vaultLock;vaultLock=function(){lock();$('vaultChatInput').value='';$('vaultChatStatus').textContent='';$('vaultChatList').replaceChildren();$('vaultEntries').replaceChildren();$('vaultInsight').textContent='Le osservazioni si basano soltanto sui dati che registri.';$('vaultNotes').value='';pane('record')};
+ $('vaultLock').onclick=vaultLock;
+ function response(input){const t=hosNormalize(input),last=(vaultData.chat||[]).filter(m=>m.role==='user').slice(-2)[0]?.text||'';if(/\b(ricordi|cosa ho detto|riprendiamo)\b/.test(t)&&last)return `Prima mi avevi scritto: «${last.slice(0,130)}». Vuoi ripartire da lì?`;if(/\b(cannabis|marijuana|erba|canne|sigarette|nicotina|alcol|bere|fumo)\b/.test(t))return 'Ti ascolto senza giudicare. In quale momento nasce questa voglia e cosa vorresti che cambiasse?';if(/\b(sesso|sessual|intimita|desiderio|relazione)\b/.test(t))return 'Possiamo parlarne con calma. Vuoi partire da quello che desideri, da un dubbio o da come ti sei sentito?';if(/\b(ansia|paura|stress|vergogna|colpa)\b/.test(t))return 'Sembra un tema che pesa. Vuoi raccontarmi un episodio concreto, oppure preferisci fermarti su come ti senti adesso?';return 'Sono qui. Se vuoi raccontarmi un dettaglio in più, posso aiutarti a mettere ordine nei pensieri.'}
+ let sending=false;
+ async function send(){const input=$('vaultChatInput'),text=input.value.trim();if(!text||!vaultData||sending)return;sending=true;input.value='';const previous=Array.isArray(vaultData.chat)?vaultData.chat.slice():[];vaultData.chat=[...previous,{role:'user',text,date:new Date().toISOString()},{role:'assistant',text:response(text),date:new Date().toISOString()}].slice(-200);renderChat();try{await vSeal();$('vaultChatStatus').textContent='Salvato nello Spazio cifrato.'}catch(e){vaultData.chat=previous;renderChat();input.value=text;$('vaultChatStatus').textContent='Non sono riuscito a salvare. Riprova.'}finally{sending=false}}
+ $('vaultChatSend').onclick=send;$('vaultChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send()}});
+})();
+</script>
 </body></html>
