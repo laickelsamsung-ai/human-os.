@@ -1,4 +1,4 @@
-HUMAN OS 0.9.3 · 25 novembre 2026
+HUMAN OS 0.9.5 · 25 novembre 2026
 
 Carica tutti i file di questa cartella nella radice del repository GitHub Pages, sostituendo quelli precedenti. Non pubblicare i backup JSON.
 
@@ -7,3 +7,7 @@ Ragnatela a 15 punti con variazioni fondate sul diario e spiegazioni; i punti se
 Account non è ancora una registrazione online. I dati sono nel browser; il backup dello Spazio privato è separato da quello generale.
 
 Menu Account in alto a destra con profilo, foto e accessi. Ragnatela a 15 raggi dal centro.
+
+Il menu Account mostra direttamente il pulsante Aggiungi/Cambia foto.
+
+Dati: verifica guidata del backup, copia di sicurezza e conferma prima del ripristino. Storico: filtri per post, diario e tappe.
