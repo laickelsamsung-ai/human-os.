@@ -1,5 +1,8 @@
-HUMAN OS 0.3
+HUMAN OS · aggiornamento Bagliore 25 novembre 2026
 Carica tutti i file della cartella nella radice di un sito HTTPS (es. GitHub Pages).
 Le domande si adattano con regole locali, NON tramite IA.
 I dati sono salvati nel browser; esporta un backup regolarmente.
 Non pubblicare mai i backup o i tuoi dati personali nel repository.
+
+Bagliore propone spunti facoltativi dai dati locali; “Non ora” li nasconde per oggi.
+Le notifiche a PWA chiusa richiedono un servizio push e non sono incluse in questa versione offline.
