@@ -19,3 +19,5 @@ Corretto lo scorrimento della pagina Profilo sui telefoni. I post del Profilo ap
 + Post offre fotocamera, galleria o frase. La fotocamera usa la disponibilità del browser/telefono. Anteprima e pubblicazione restano separati.
 
 Settimana: countdown visibile e aggiornato ogni secondo fino alle 18:00 di venerdì o domenica.
+
+Aggiornamento 0.9.10: sezione Pensieri nella pagina Oggi. Ogni pensiero è incluso nel backup generale.
